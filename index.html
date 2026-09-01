@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn With Jay - GCE Exam Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .header .subtitle {
+            font-size: 12px;
+            margin-top: 8px;
+            opacity: 0.8;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-box {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-box .number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-box .label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .subject-stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .subject-stat {
+            background: #f0f4ff;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 3px solid #667eea;
+            font-size: 11px;
+        }
+
+        .subject-stat .subject-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .subject-stat .subject-score {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .question-container {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #667eea;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .question-number {
+            background: #667eea;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .question-category {
+            background: #e8eaf6;
+            color: #667eea;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .question-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 15px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover:not(.answered) {
+            border-color: #667eea;
+            background: #f8f9ff;
+            transform: translateX(5px);
+        }
+
+        .option-letter {
+            background: #667eea;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .option.answered {
+            cursor: not-allowed;
+        }
+
+        .option.correct {
+            border-color: #4caf50;
+            background: #f1f8f4;
+        }
+
+        .option.correct .option-letter {
+            background: #4caf50;
+        }
+
+        .option.wrong {
+            border-color: #f44336;
+            background: #fef3f2;
+        }
+
+        .option.wrong .option-letter {
+            background: #f44336;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .feedback.correct {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            color: #2e7d32;
+        }
+
+        .feedback.wrong {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            color: #c62828;
+        }
+
+        .feedback-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #d0d0d0;
+        }
+
+        .results-screen {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .results-screen.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .results-score {
+            font-size: 60px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .results-percentage {
+            font-size: 28px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .results-message {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .results-breakdown {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .breakdown-item {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .breakdown-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .breakdown-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .subject-results {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .subject-results h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .subject-result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .subject-result-item .subject-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .subject-result-item .score {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        @media (max-width: 600px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .subject-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .question-text {
+                font-size: 14px;
+            }
+
+            .results-score {
+                font-size: 48px;
+            }
+
+            .results-percentage {
+                font-size: 22px;
+            }
+
+            .results-breakdown {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Learn With Jay</h1>
+            <p>GCE General Examination</p>
+            <div class="subtitle">Chemistry | Mathematics | Physics | Biology | English</div>
+        </div>
+
+        <div class="content">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="number" id="currentQuestion">1</div>
+                    <div class="label">Current Question</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="correctCount">0</div>
+                    <div class="label">Correct Answers</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="scorePercentage">0%</div>
+                    <div class="label">Score</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="totalQuestions">150</div>
+                    <div class="label">Total Questions</div>
+                </div>
+            </div>
+
+            <div id="subjectStats" class="subject-stats"></div>
+
+            <div id="examContent">
+                <!-- Questions will be inserted here -->
+            </div>
+
+            <div id="resultsScreen" class="results-screen">
+                <div class="results-score" id="finalScore"></div>
+                <div class="results-percentage" id="finalPercentage"></div>
+                <div class="results-message" id="resultMessage"></div>
+                <div class="results-breakdown">
+                    <div class="breakdown-item">
+                        <div class="breakdown-number" id="breakdownCorrect"></div>
+                        <div class="breakdown-label">Correct</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-number" id="breakdownWrong"></div>
+                        <div class="breakdown-label">Wrong</div>
+                    </div>
+                </div>
+                <div class="subject-results">
+                    <h3>Score by Subject:</h3>
+                    <div id="subjectResultsList"></div>
+                </div>
+                <div class="buttons">
+                    <button class="btn-primary" onclick="restartExam()">🔄 Try Again</button>
+                    <button class="btn-secondary" onclick="viewAnswerKey()">📋 View Answer Key</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="answerKeyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Answer Key - All 150 Questions</div>
+            <div id="answerKeyContent"></div>
+            <button class="btn-primary" onclick="closeAnswerKey()" style="width: 100%; margin-top: 20px;">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const allQuestions = [
+            // CHEMISTRY (1-30)
+            { num: 1, text: "What is the atomic number of Carbon?", options: ["4", "6", "8", "12"], correct: 1, subject: "Chemistry", explanation: "Carbon has an atomic number of 6, meaning it has 6 protons." },
+            { num: 2, text: "Which of the following is a non-metal?", options: ["Iron", "Oxygen", "Copper", "Zinc"], correct: 1, subject: "Chemistry", explanation: "Oxygen is a non-metal. Iron, Copper, and Zinc are all metals." },
+            { num: 3, text: "What is the chemical formula for sulfuric acid?", options: ["H₂SO₃", "H₂SO₄", "HSO₄", "H₃SO₄"], correct: 1, subject: "Chemistry", explanation: "Sulfuric acid has the formula H₂SO₄ (dihydrogen sulfate)." },
+            { num: 4, text: "Which type of bond exists in NaCl?", options: ["Covalent", "Ionic", "Metallic", "Hydrogen"], correct: 1, subject: "Chemistry", explanation: "NaCl (sodium chloride) is held together by ionic bonds between Na⁺ and Cl⁻ ions." },
+            { num: 5, text: "What is the valency of Chlorine?", options: ["1", "2", "3", "7"], correct: 0, subject: "Chemistry", explanation: "Chlorine has a valency of 1 because it needs one electron to complete its outer shell." },
+            { num: 6, text: "Which gas is produced when dilute HCl reacts with Zn?", options: ["CO₂", "H₂", "Cl₂", "NH₃"], correct: 1, subject: "Chemistry", explanation: "Hydrogen gas (H₂) is produced: Zn + 2HCl → ZnCl₂ + H₂" },
+            { num: 7, text: "What is the general formula for alkanes?", options: ["CₙH₂ₙ", "CₙH₂ₙ₊₂", "CₙH₂ₙ₋₂", "CₙHₙ"], correct: 1, subject: "Chemistry", explanation: "Alkanes follow the formula CₙH₂ₙ₊₂ (e.g., CH₄, C₂H₆, C₃H₈)." },
+            { num: 8, text: "Which element is most abundant in the Earth's crust?", options: ["Iron", "Silicon", "Oxygen", "Aluminum"], correct: 2, subject: "Chemistry", explanation: "Oxygen is the most abundant element in Earth's crust at about 46%." },
+            { num: 9, text: "What is the pH of a strong acid?", options: ["Between 7-14", "Less than 7", "Equal to 7", "Greater than 14"], correct: 1, subject: "Chemistry", explanation: "Strong acids have pH < 7 (typically 0-3 range)." },
+            { num: 10, text: "Which of these is an example of a reversible reaction?", options: ["Combustion of fuel", "Heating CuSO₄.5H₂O", "Neutralization", "Rusting of iron"], correct: 1, subject: "Chemistry", explanation: "Heating CuSO₄·5H₂O → CuSO₄ + H₂O (reversible), cooling reverses it." },
+            { num: 11, text: "What is the correct IUPAC name for C₂H₆?", options: ["Ethene", "Ethyne", "Ethane", "Methane"], correct: 2, subject: "Chemistry", explanation: "C₂H₆ is ethane (an alkane with 2 carbons)." },
+            { num: 12, text: "Which gas turns lime water milky?", options: ["O₂", "N₂", "CO₂", "H₂"], correct: 2, subject: "Chemistry", explanation: "Carbon dioxide turns lime water milky white due to CaCO₃ precipitation." },
+            { num: 13, text: "What happens in an exothermic reaction?", options: ["Heat is absorbed", "Heat is released", "No change in temperature", "Pressure increases"], correct: 1, subject: "Chemistry", explanation: "Exothermic reactions release heat to the surroundings." },
+            { num: 14, text: "Which of the following is an oxidation reaction?", options: ["Mg + O₂ → MgO", "H₂ + O₂ → H₂O", "Combustion", "All of the above"], correct: 3, subject: "Chemistry", explanation: "All options involve oxidation - loss of electrons or gain of oxygen." },
+            { num: 15, text: "What is the molar mass of CO₂?", options: ["28 g/mol", "44 g/mol", "60 g/mol", "32 g/mol"], correct: 1, subject: "Chemistry", explanation: "CO₂: C(12) + O₂(16×2) = 12 + 32 = 44 g/mol" },
+            { num: 16, text: "Which metal reacts most vigorously with dilute HCl?", options: ["Copper", "Iron", "Magnesium", "Lead"], correct: 2, subject: "Chemistry", explanation: "Magnesium is more reactive and reacts vigorously with dilute HCl." },
+            { num: 17, text: "What is a polymer?", options: ["A small molecule", "A large molecule made of repeating units", "A metal compound", "A mineral"], correct: 1, subject: "Chemistry", explanation: "Polymers are large molecules made of many repeating small units (monomers)." },
+            { num: 18, text: "Which of the following shows the correct trend of electronegativity?", options: ["Cl > F > N", "F > Cl > N", "N > F > Cl", "Cl > N > F"], correct: 1, subject: "Chemistry", explanation: "Fluorine has the highest electronegativity (4.0), followed by Chlorine (3.0)." },
+            { num: 19, text: "What is the oxidation state of Oxygen in most compounds?", options: ["-1", "-2", "0", "+2"], correct: 1, subject: "Chemistry", explanation: "Oxygen usually has oxidation state -2 (except in peroxides where it's -1)." },
+            { num: 20, text: "Which gas supports combustion?", options: ["Nitrogen", "Oxygen", "Carbon dioxide", "Hydrogen"], correct: 1, subject: "Chemistry", explanation: "Oxygen supports combustion and is necessary for burning." },
+            { num: 21, text: "What type of reaction is: A + B → AB?", options: ["Decomposition", "Combination", "Displacement", "Redox"], correct: 1, subject: "Chemistry", explanation: "This is a combination (synthesis) reaction where two substances form one." },
+            { num: 22, text: "Which is the noble gas with the highest atomic number?", options: ["Helium", "Neon", "Radon", "Argon"], correct: 2, subject: "Chemistry", explanation: "Radon (Rn) is the noble gas with the highest atomic number (86)." },
+            { num: 23, text: "What is the electron configuration of Sodium (Na)?", options: ["2,8,1", "2,7,2", "2,8", "2,8,8,1"], correct: 0, subject: "Chemistry", explanation: "Sodium has 11 electrons: 2 in first shell, 8 in second, 1 in third." },
+            { num: 24, text: "Which of these is insoluble in water?", options: ["NaCl", "AgNO₃", "AgCl", "KOH"], correct: 2, subject: "Chemistry", explanation: "AgCl (silver chloride) is insoluble in water; the others are soluble." },
+            { num: 25, text: "What does the reactivity series show?", options: ["Order of atomic masses", "Order of reactivity of metals", "Order of melting points", "Order of densities"], correct: 1, subject: "Chemistry", explanation: "The reactivity series arranges metals by their tendency to lose electrons." },
+            { num: 26, text: "What is formed when an acid reacts with a base?", options: ["Water and salt", "Water only", "Salt only", "Gas and water"], correct: 0, subject: "Chemistry", explanation: "Acid + Base → Salt + Water (neutralization reaction)." },
+            { num: 27, text: "Which process involves breaking of bonds?", options: ["Endothermic", "Exothermic", "Combustion", "Polymerization"], correct: 0, subject: "Chemistry", explanation: "Endothermic reactions absorb energy to break bonds." },
+            { num: 28, text: "What is the correct formula for calcium carbonate?", options: ["CaCO₂", "Ca₂CO₃", "CaCO₃", "Ca₂CO₂"], correct: 2, subject: "Chemistry", explanation: "Calcium carbonate is CaCO₃ (limestone)." },
+            { num: 29, text: "Which element is a metalloid?", options: ["Silicon", "Sodium", "Sulfur", "Phosphorus"], correct: 0, subject: "Chemistry", explanation: "Silicon is a metalloid with properties of both metals and non-metals." },
+            { num: 30, text: "What is the general formula for alkynes?", options: ["CₙH₂ₙ₋₂", "CₙH₂ₙ", "CₙH₂ₙ₊₂", "CₙH₂ₙ₊₄"], correct: 0, subject: "Chemistry", explanation: "Alkynes have triple bonds: CₙH₂ₙ₋₂ (e.g., C₂H₂ acetylene)." },
+
+            // MATHEMATICS (31-60)
+            { num: 31, text: "If 5x - 3 = 22, find x", options: ["5", "25", "27", "29"], correct: 0, subject: "Mathematics", explanation: "5x - 3 = 22 → 5x = 25 → x = 5" },
+            { num: 32, text: "What is the sum of angles in a triangle?", options: ["90°", "180°", "270°", "360°"], correct: 1, subject: "Mathematics", explanation: "The sum of interior angles in any triangle is always 180°." },
+            { num: 33, text: "Solve: 2x² - 8x + 6 = 0", options: ["x = 1 or x = 3", "x = 2 or x = 4", "x = 0 or x = 5", "x = -1 or x = -3"], correct: 0, subject: "Mathematics", explanation: "2x² - 8x + 6 = 0 → 2(x² - 4x + 3) = 0 → (x-1)(x-3) = 0 → x = 1 or 3" },
+            { num: 34, text: "What is the area of a circle with radius 7cm?", options: ["44 cm²", "49 cm²", "154 cm²", "196 cm²"], correct: 2, subject: "Mathematics", explanation: "Area = πr² = π(7)² = 49π ≈ 154 cm²" },
+            { num: 35, text: "If sin θ = 3/5, what is cos θ?", options: ["3/5", "4/5", "5/3", "5/4"], correct: 1, subject: "Mathematics", explanation: "Using Pythagoras: cos²θ = 1 - sin²θ = 1 - 9/25 = 16/25 → cos θ = 4/5" },
+            { num: 36, text: "What is the value of log₁₀(100)?", options: ["1", "2", "10", "100"], correct: 1, subject: "Mathematics", explanation: "log₁₀(100) = log₁₀(10²) = 2" },
+            { num: 37, text: "The sum of first n natural numbers is?", options: ["n(n+1)/2", "n²", "n(n-1)/2", "2n"], correct: 0, subject: "Mathematics", explanation: "1 + 2 + 3 + ... + n = n(n+1)/2" },
+            { num: 38, text: "What is the distance between points (0,0) and (3,4)?", options: ["5", "7", "12", "25"], correct: 0, subject: "Mathematics", explanation: "Distance = √(3² + 4²) = √(9 + 16) = √25 = 5" },
+            { num: 39, text: "If the mean of 5 numbers is 10, what is their sum?", options: ["15", "30", "50", "100"], correct: 2, subject: "Mathematics", explanation: "Mean = Sum/5 → 10 = Sum/5 → Sum = 50" },
+            { num: 40, text: "What is 15% of 300?", options: ["30", "45", "50", "75"], correct: 1, subject: "Mathematics", explanation: "15% of 300 = 0.15 × 300 = 45" },
+            { num: 41, text: "Simplify: √(16/25)", options: ["4/5", "16/25", "8/5", "2/5"], correct: 0, subject: "Mathematics", explanation: "√(16/25) = √16/√25 = 4/5" },
+            { num: 42, text: "What is the slope of the line y = 3x + 5?", options: ["3", "5", "8", "-3"], correct: 0, subject: "Mathematics", explanation: "In y = mx + b form, m = 3 is the slope." },
+            { num: 43, text: "Find the value of 2³ × 2⁴", options: ["16", "32", "64", "128"], correct: 3, subject: "Mathematics", explanation: "2³ × 2⁴ = 2⁷ = 128" },
+            { num: 44, text: "If a:b = 2:3 and b:c = 3:4, find a:c", options: ["2:3", "2:4", "3:4", "2:4"], correct: 1, subject: "Mathematics", explanation: "a:b:c = 2:3:4 → a:c = 2:4" },
+            { num: 45, text: "What is the circumference of a circle with diameter 10cm?", options: ["10π cm", "20π cm", "5π cm", "100π cm"], correct: 1, subject: "Mathematics", explanation: "Circumference = πd = 10π ≈ 31.4 cm" },
+            { num: 46, text: "Solve: 3(x-2) = 15", options: ["x = 7", "x = 8", "x = 9", "x = 10"], correct: 0, subject: "Mathematics", explanation: "3(x-2) = 15 → x - 2 = 5 → x = 7" },
+            { num: 47, text: "What is the mode of 2, 3, 3, 4, 5, 5, 5, 6?", options: ["3", "4", "5", "6"], correct: 2, subject: "Mathematics", explanation: "Mode is the most frequent value. 5 appears three times (most frequent)." },
+            { num: 48, text: "If cos 60° = 1/2, what is sin 60°?", options: ["1/2", "√3/2", "1", "√2/2"], correct: 1, subject: "Mathematics", explanation: "sin 60° = √3/2 ≈ 0.866" },
+            { num: 49, text: "What is the LCM of 12 and 18?", options: ["36", "6", "12", "18"], correct: 0, subject: "Mathematics", explanation: "Multiples of 12: 12, 24, 36... Multiples of 18: 18, 36... LCM = 36" },
+            { num: 50, text: "Express 0.45 as a fraction", options: ["45/100", "9/20", "45/1000", "9/200"], correct: 1, subject: "Mathematics", explanation: "0.45 = 45/100 = 9/20 (simplified)" },
+            { num: 51, text: "What is the volume of a cube with side 5cm?", options: ["25 cm³", "75 cm³", "125 cm³", "150 cm³"], correct: 2, subject: "Mathematics", explanation: "Volume = side³ = 5³ = 125 cm³" },
+            { num: 52, text: "If x² = 49, what is x?", options: ["7 only", "-7 only", "±7", "None"], correct: 2, subject: "Mathematics", explanation: "Both x = 7 and x = -7 satisfy x² = 49" },
+            { num: 53, text: "What is the HCF of 24 and 36?", options: ["12", "24", "36", "6"], correct: 0, subject: "Mathematics", explanation: "Factors of 24: 1,2,3,4,6,8,12,24. Factors of 36: 1,2,3,4,6,9,12,18,36. HCF = 12" },
+            { num: 54, text: "Simplify: (a²b³)/(ab²)", options: ["a/b", "ab", "ab²", "a²b"], correct: 1, subject: "Mathematics", explanation: "(a²b³)/(ab²) = a²⁻¹ × b³⁻² = a × b = ab" },
+            { num: 55, text: "What is 40% of 250?", options: ["10", "100", "150", "200"], correct: 1, subject: "Mathematics", explanation: "40% of 250 = 0.4 × 250 = 100" },
+            { num: 56, text: "If tan θ = 1, what is θ?", options: ["30°", "45°", "60°", "90°"], correct: 1, subject: "Mathematics", explanation: "tan 45° = 1" },
+            { num: 57, text: "What is the probability of getting an even number when rolling a die?", options: ["1/3", "1/2", "2/3", "1/6"], correct: 1, subject: "Mathematics", explanation: "Even numbers on die: 2, 4, 6. P(even) = 3/6 = 1/2" },
+            { num: 58, text: "Solve: x/3 + 2 = 5", options: ["x = 3", "x = 6", "x = 9", "x = 12"], correct: 2, subject: "Mathematics", explanation: "x/3 = 3 → x = 9" },
+            { num: 59, text: "What is the square root of 144?", options: ["10", "11", "12", "13"], correct: 2, subject: "Mathematics", explanation: "√144 = 12 (since 12 × 12 = 144)" },
+            { num: 60, text: "If y = 2x + 1, what is y when x = 5?", options: ["11", "12", "13", "14"], correct: 0, subject: "Mathematics", explanation: "y = 2(5) + 1 = 10 + 1 = 11" },
+
+            // PHYSICS (61-90)
+            { num: 61, text: "What is the SI unit of force?", options: ["gram", "Newton", "Joule", "Watt"], correct: 1, subject: "Physics", explanation: "The SI unit of force is Newton (N), defined as kg·m/s²." },
+            { num: 62, text: "An object moving in a circle has?", options: ["constant velocity", "constant speed", "zero acceleration", "all of above"], correct: 1, subject: "Physics", explanation: "Circular motion has constant speed but changing velocity and acceleration." },
+            { num: 63, text: "What is the speed of light?", options: ["3×10⁸ m/s", "3×10⁶ m/s", "3×10⁹ m/s", "3×10⁷ m/s"], correct: 0, subject: "Physics", explanation: "Speed of light = 3 × 10⁸ m/s = 300,000 km/s" },
+            { num: 64, text: "Which of the following is a vector quantity?", options: ["Mass", "Time", "Temperature", "Displacement"], correct: 3, subject: "Physics", explanation: "Displacement is a vector (has magnitude and direction). Mass, time, temp are scalars." },
+            { num: 65, text: "What is the acceleration due to gravity?", options: ["8.9 m/s²", "9.8 m/s²", "10.8 m/s²", "11.8 m/s²"], correct: 1, subject: "Physics", explanation: "g = 9.8 m/s² on Earth's surface (often rounded to 10 m/s²)" },
+            { num: 66, text: "Newton's first law of motion states?", options: ["F = ma", "An object continues in uniform motion unless acted upon", "Action = Reaction", "Energy is conserved"], correct: 1, subject: "Physics", explanation: "First law: Object at rest stays at rest; moving object continues unless force acts." },
+            { num: 67, text: "What is momentum?", options: ["mass × velocity", "force × time", "mass × acceleration", "force × distance"], correct: 0, subject: "Physics", explanation: "Momentum p = m × v" },
+            { num: 68, text: "Which type of lens is used to correct myopia?", options: ["Convex", "Concave", "Bifocal", "Cylindrical"], correct: 1, subject: "Physics", explanation: "Concave lenses diverge light and correct nearsightedness (myopia)." },
+            { num: 69, text: "What is the frequency of a wave with wavelength 2m and speed 10m/s?", options: ["5 Hz", "10 Hz", "20 Hz", "40 Hz"], correct: 0, subject: "Physics", explanation: "Frequency = Speed/Wavelength = 10/2 = 5 Hz" },
+            { num: 70, text: "Ohm's law states: V = ?", options: ["I/R", "IR", "I + R", "I - R"], correct: 1, subject: "Physics", explanation: "Ohm's law: V = I × R (Voltage = Current × Resistance)" },
+            { num: 71, text: "What is the SI unit of energy?", options: ["Newton", "Watt", "Joule", "Pascal"], correct: 2, subject: "Physics", explanation: "Joule is the SI unit of energy." },
+            { num: 72, text: "Which of these is a scalar quantity?", options: ["Velocity", "Force", "Acceleration", "Speed"], correct: 3, subject: "Physics", explanation: "Speed has only magnitude. Velocity, force, acceleration are vectors." },
+            { num: 73, text: "The angle of incidence equals the angle of?", options: ["refraction", "reflection", "diffraction", "dispersion"], correct: 1, subject: "Physics", explanation: "Law of reflection: angle of incidence = angle of reflection" },
+            { num: 74, text: "What is the focal length if power of lens is 2D?", options: ["0.25 m", "0.5 m", "2 m", "4 m"], correct: 1, subject: "Physics", explanation: "Power = 1/focal length → f = 1/2 = 0.5 m" },
+            { num: 75, text: "Heat flows from?", options: ["cold to hot", "hot to cold", "high to low pressure", "low to high potential"], correct: 1, subject: "Physics", explanation: "Heat flows spontaneously from higher to lower temperature." },
+            { num: 76, text: "What is the density of water?", options: ["100 kg/m³", "500 kg/m³", "1000 kg/m³", "2000 kg/m³"], correct: 2, subject: "Physics", explanation: "Density of water = 1000 kg/m³ = 1 g/cm³" },
+            { num: 77, text: "The SI unit of pressure is?", options: ["Newton", "Pascal", "Joule", "Watt"], correct: 1, subject: "Physics", explanation: "Pascal (Pa) is the SI unit of pressure = N/m²" },
+            { num: 78, text: "What type of mirror produces a real, inverted image?", options: ["Plane", "Concave", "Convex", "All"], correct: 1, subject: "Physics", explanation: "Concave mirrors can produce real, inverted images." },
+            { num: 79, text: "Kinetic energy is given by?", options: ["mgh", "½mv²", "mgv", "m²v"], correct: 1, subject: "Physics", explanation: "Kinetic energy KE = ½mv²" },
+            { num: 80, text: "What is the relationship between frequency and period?", options: ["f = T", "f = 1/T", "f = T²", "f = √T"], correct: 1, subject: "Physics", explanation: "Frequency and period are reciprocals: f = 1/T" },
+            { num: 81, text: "The gravitational force between two masses is?", options: ["directly proportional to product of masses", "inversely proportional to distance squared", "both A and B", "none"], correct: 2, subject: "Physics", explanation: "Newton's law: F ∝ m₁m₂/r² (both conditions true)" },
+            { num: 82, text: "Which has greater inertia?", options: ["1kg iron", "1kg cotton", "both equal", "none"], correct: 0, subject: "Physics", explanation: "Inertia depends on mass alone. 1kg iron and 1kg cotton have equal inertia." },
+            { num: 83, text: "What is the refractive index of glass approximately?", options: ["1", "1.5", "2", "2.5"], correct: 1, subject: "Physics", explanation: "Refractive index of glass ≈ 1.5" },
+            { num: 84, text: "The work done is zero when?", options: ["force is zero", "displacement is zero", "angle is 90°", "force equals displacement"], correct: 2, subject: "Physics", explanation: "Work = F × d × cos θ. When θ = 90°, cos 90° = 0, so W = 0" },
+            { num: 85, text: "Which color has the highest frequency?", options: ["Red", "Green", "Violet", "Yellow"], correct: 2, subject: "Physics", explanation: "Violet has the shortest wavelength and highest frequency in visible light." },
+            { num: 86, text: "The SI unit of electric current is?", options: ["Volt", "Ampere", "Coulomb", "Ohm"], correct: 1, subject: "Physics", explanation: "Ampere (A) is the SI unit of electric current." },
+            { num: 87, text: "What is the principle behind the hydraulic press?", options: ["Pascal's law", "Archimedes' principle", "Newton's law", "Hooke's law"], correct: 0, subject: "Physics", explanation: "Pascal's law: Pressure applied to fluid is transmitted equally in all directions." },
+            { num: 88, text: "Gamma rays have?", options: ["longest wavelength", "shortest wavelength", "medium wavelength", "no wavelength"], correct: 1, subject: "Physics", explanation: "Gamma rays have the shortest wavelength in electromagnetic spectrum." },
+            { num: 89, text: "The efficiency of a machine is?", options: ["output/input", "input/output", "output × input", "output + input"], correct: 0, subject: "Physics", explanation: "Efficiency = (Useful output/Total input) × 100%" },
+            { num: 90, text: "What is the SI unit of resistance?", options: ["Ampere", "Ohm", "Volt", "Watt"], correct: 1, subject: "Physics", explanation: "Ohm (Ω) is the SI unit of electrical resistance." },
+
+            // BIOLOGY (91-120)
+            { num: 91, text: "The basic unit of life is?", options: ["atom", "molecule", "cell", "tissue"], correct: 2, subject: "Biology", explanation: "The cell is the basic structural and functional unit of all living organisms." },
+            { num: 92, text: "Photosynthesis occurs in which organelle?", options: ["mitochondrion", "chloroplast", "ribosome", "nucleus"], correct: 1, subject: "Biology", explanation: "Chloroplasts contain chlorophyll and are where photosynthesis occurs." },
+            { num: 93, text: "What is the function of the kidney?", options: ["digestion", "excretion", "respiration", "reproduction"], correct: 1, subject: "Biology", explanation: "Kidneys filter waste from blood to form urine (excretion)." },
+            { num: 94, text: "Which blood cells fight infections?", options: ["RBC", "WBC", "platelets", "plasma"], correct: 1, subject: "Biology", explanation: "White blood cells (WBC) defend against pathogens." },
+            { num: 95, text: "The process by which plants make their own food is?", options: ["respiration", "fermentation", "photosynthesis", "digestion"], correct: 2, subject: "Biology", explanation: "Photosynthesis: 6CO₂ + 6H₂O + light → C₆H₁₂O₆ + 6O₂" },
+            { num: 96, text: "DNA stands for?", options: ["Deoxyribonucleic Acid", "Dynamic Nuclear Acid", "Diploid Nuclear Acid", "Dinitro-Nucleic Acid"], correct: 0, subject: "Biology", explanation: "DNA (Deoxyribonucleic Acid) carries genetic information." },
+            { num: 97, text: "Which organelle is the powerhouse of the cell?", options: ["nucleus", "mitochondrion", "ribosome", "lysosome"], correct: 1, subject: "Biology", explanation: "Mitochondria produce ATP through cellular respiration." },
+            { num: 98, text: "How many chromosomes do humans have?", options: ["23", "46", "48", "52"], correct: 1, subject: "Biology", explanation: "Humans have 46 chromosomes (23 pairs)." },
+            { num: 99, text: "The process of asexual reproduction in bacteria is?", options: ["fission", "budding", "fragmentation", "conjugation"], correct: 0, subject: "Biology", explanation: "Binary fission: one bacterium splits into two identical cells." },
+            { num: 100, text: "Which enzyme breaks down starch?", options: ["Lipase", "Amylase", "Protease", "Pepsin"], correct: 1, subject: "Biology", explanation: "Amylase breaks down starch into sugars." },
+            { num: 101, text: "What is the site of protein synthesis?", options: ["nucleus", "ribosome", "mitochondrion", "chloroplast"], correct: 1, subject: "Biology", explanation: "Ribosomes read mRNA and synthesize proteins." },
+            { num: 102, text: "The sequence of feeding relationships is called?", options: ["food web", "food chain", "ecosystem", "biome"], correct: 1, subject: "Biology", explanation: "Food chain shows linear feeding: Grass → Herbivore → Carnivore" },
+            { num: 103, text: "Which hormone regulates blood glucose?", options: ["adrenaline", "insulin", "thyroxine", "estrogen"], correct: 1, subject: "Biology", explanation: "Insulin lowers blood glucose; glucagon raises it." },
+            { num: 104, text: "The study of heredity is called?", options: ["cytology", "genetics", "ecology", "taxonomy"], correct: 1, subject: "Biology", explanation: "Genetics studies inheritance and genes." },
+            { num: 105, text: "What is the function of the small intestine?", options: ["storage", "absorption", "secretion", "excretion"], correct: 1, subject: "Biology", explanation: "Small intestine absorbs digested nutrients into the bloodstream." },
+            { num: 106, text: "Which is the largest organ in the human body?", options: ["heart", "brain", "liver", "skin"], correct: 3, subject: "Biology", explanation: "Skin is the largest organ by surface area." },
+            { num: 107, text: "What is the function of red blood cells?", options: ["transport oxygen", "fight infections", "clot blood", "produce antibodies"], correct: 0, subject: "Biology", explanation: "RBCs contain hemoglobin and transport oxygen." },
+            { num: 108, text: "The respiratory pigment in red blood cells is?", options: ["myoglobin", "chlorophyll", "hemoglobin", "melanin"], correct: 2, subject: "Biology", explanation: "Hemoglobin binds oxygen for transport." },
+            { num: 109, text: "Which of the following is a primary consumer?", options: ["lion", "grass", "deer", "eagle"], correct: 2, subject: "Biology", explanation: "Deer are herbivores (primary consumers); lions are tertiary." },
+            { num: 110, text: "What is the function of lysosomes?", options: ["protein synthesis", "breaking down waste", "energy production", "storage"], correct: 1, subject: "Biology", explanation: "Lysosomes contain enzymes that break down cellular waste." },
+            { num: 111, text: "The process of breakdown of glucose is?", options: ["photosynthesis", "respiration", "fermentation", "digestion"], correct: 1, subject: "Biology", explanation: "Cellular respiration breaks down glucose for energy." },
+            { num: 112, text: "Which structures enable movement in paramecium?", options: ["flagella", "cilia", "pseudopodia", "setae"], correct: 1, subject: "Biology", explanation: "Cilia are hair-like structures that help paramecium move." },
+            { num: 113, text: "What is the function of the placenta?", options: ["protection", "nutrition and gas exchange", "movement", "support"], correct: 1, subject: "Biology", explanation: "Placenta enables nutrient and gas exchange between fetus and mother." },
+            { num: 114, text: "Which type of reproduction produces identical offspring?", options: ["sexual", "asexual", "binary", "genetic"], correct: 1, subject: "Biology", explanation: "Asexual reproduction produces genetically identical offspring." },
+            { num: 115, text: "The number of chambers in a human heart is?", options: ["2", "3", "4", "5"], correct: 2, subject: "Biology", explanation: "Human heart has 4 chambers: 2 atria and 2 ventricles." },
+            { num: 116, text: "What is the function of the stomach?", options: ["digestion and storage", "absorption", "secretion", "excretion"], correct: 0, subject: "Biology", explanation: "Stomach mixes food and secretes digestive juices." },
+            { num: 117, text: "Which is the main excretory product of animals?", options: ["protein", "urea", "glucose", "starch"], correct: 1, subject: "Biology", explanation: "Urea is the main nitrogenous waste from protein breakdown." },
+            { num: 118, text: "The membrane surrounding the cell is?", options: ["cell wall", "cell membrane", "nucleus", "cytoplasm"], correct: 1, subject: "Biology", explanation: "Cell membrane (plasma membrane) controls what enters/exits the cell." },
+            { num: 119, text: "Which part of the brain controls balance?", options: ["cerebrum", "cerebellum", "medulla", "pons"], correct: 1, subject: "Biology", explanation: "Cerebellum controls coordination and balance." },
+            { num: 120, text: "The process of removing waste from cells is?", options: ["secretion", "excretion", "egestion", "absorption"], correct: 1, subject: "Biology", explanation: "Excretion removes metabolic waste; egestion removes undigested food." },
+
+            // ENGLISH (121-150)
+            { num: 121, text: "Which of the following is a noun?", options: ["beautiful", "quickly", "elephant", "run"], correct: 2, subject: "English", explanation: "Elephant is a noun (person, place, or thing)." },
+            { num: 122, text: "The word 'run' in 'he runs fast' is a?", options: ["noun", "verb", "adjective", "adverb"], correct: 1, subject: "English", explanation: "'runs' is a verb (action word)." },
+            { num: 123, text: "Choose the correctly spelled word", options: ["recieve", "receive", "recive", "receve"], correct: 1, subject: "English", explanation: "'receive' is the correct spelling (i before e, except after c)." },
+            { num: 124, text: "Which is an adjective?", options: ["happily", "happy", "happiness", "happen"], correct: 1, subject: "English", explanation: "'happy' is an adjective describing a noun." },
+            { num: 125, text: "The opposite of 'beautiful' is?", options: ["pretty", "ugly", "nice", "wonderful"], correct: 1, subject: "English", explanation: "'ugly' is the antonym of beautiful." },
+            { num: 126, text: "Complete: She ____ to the market yesterday", options: ["go", "goes", "went", "going"], correct: 2, subject: "English", explanation: "Past tense required: 'went' (past of go)" },
+            { num: 127, text: "Which sentence is correct?", options: ["She don't like apples", "She doesn't like apples", "She do not like apples", "She not like apples"], correct: 1, subject: "English", explanation: "'She doesn't like apples' uses correct grammar and verb form." },
+            { num: 128, text: "The subject of 'The cat sat on the mat' is?", options: ["cat", "mat", "sat", "the"], correct: 0, subject: "English", explanation: "The subject (who/what the sentence is about) is 'cat'." },
+            { num: 129, text: "Which word is an adverb?", options: ["quick", "slowly", "sad", "think"], correct: 1, subject: "English", explanation: "'slowly' modifies verbs and ends in -ly (typical adverb)." },
+            { num: 130, text: "Choose the correct plural", options: ["child", "childs", "childes", "children"], correct: 3, subject: "English", explanation: "'children' is the correct irregular plural of child." },
+            { num: 131, text: "The synonym of 'big' is?", options: ["small", "large", "tiny", "short"], correct: 1, subject: "English", explanation: "'large' means the same as big." },
+            { num: 132, text: "Which is a vowel?", options: ["b", "c", "e", "d"], correct: 2, subject: "English", explanation: "Vowels are a, e, i, o, u. 'e' is a vowel." },
+            { num: 133, text: "Complete: If I ____ you, I would help", options: ["see", "saw", "were", "am"], correct: 1, subject: "English", explanation: "Second conditional uses past tense: 'If I saw...'" },
+            { num: 134, text: "The tense in 'I have eaten' is?", options: ["past", "present perfect", "past perfect", "future"], correct: 1, subject: "English", explanation: "'have eaten' is present perfect (have + past participle)." },
+            { num: 135, text: "Which article is used before 'vowel sound'?", options: ["a", "an", "the", "none"], correct: 1, subject: "English", explanation: "'an' is used before vowel sounds (an apple, an hour)." },
+            { num: 136, text: "The pronoun in the sentence is?", options: ["book", "mine", "the", "is"], correct: 1, subject: "English", explanation: "'mine' is a possessive pronoun in 'The book is mine'." },
+            { num: 137, text: "Which is a conjunction?", options: ["quickly", "beautiful", "and", "jump"], correct: 2, subject: "English", explanation: "'and' joins words/clauses (conjunction)." },
+            { num: 138, text: "The passive voice form of 'I write a letter' is?", options: ["A letter is written by me", "A letter is wrote by me", "I am written a letter", "A letter is writing by me"], correct: 0, subject: "English", explanation: "Passive: 'A letter is written by me' (auxiliary + past participle)" },
+            { num: 139, text: "Choose the correct form: You ____ study hard", options: ["should", "shall", "will", "must"], correct: 0, subject: "English", explanation: "'should' gives advice/recommendation." },
+            { num: 140, text: "The singular form of 'mice' is?", options: ["mice", "mouses", "mouse", "mices"], correct: 2, subject: "English", explanation: "'mouse' is the correct singular (irregular noun)." },
+            { num: 141, text: "Which word needs capitalization?", options: ["monday", "apple", "cat", "run"], correct: 0, subject: "English", explanation: "Days of the week are capitalized: 'Monday'" },
+            { num: 142, text: "The antonym of 'dark' is?", options: ["dim", "bright", "light", "shadow"], correct: 1, subject: "English", explanation: "'bright' is the opposite of dark." },
+            { num: 143, text: "Complete: They ____ playing football", options: ["is", "are", "am", "was"], correct: 1, subject: "English", explanation: "Plural subject 'they' takes 'are'." },
+            { num: 144, text: "Which preposition is correct: 'I arrived ____ time'", options: ["in", "on", "at", "by"], correct: 2, subject: "English", explanation: "'at' is used with time: 'at noon', 'at 3 PM'" },
+            { num: 145, text: "The compound word is?", options: ["beautiful", "sunflower", "quickly", "redo"], correct: 1, subject: "English", explanation: "'sunflower' combines 'sun' + 'flower'" },
+            { num: 146, text: "Choose the correct sentence", options: ["She go to school", "She goes to school", "She going to school", "She gone to school"], correct: 1, subject: "English", explanation: "Present tense: 'She goes' (subject-verb agreement)" },
+            { num: 147, text: "The homophone of 'their' is?", options: ["there", "they", "the", "these"], correct: 0, subject: "English", explanation: "'there' and 'their' sound the same but have different meanings." },
+            { num: 148, text: "Which is the correct question form?", options: ["Does he like apples?", "Do he like apples?", "He do like apples?", "He does like apples?"], correct: 0, subject: "English", explanation: "'Does he like...' uses correct auxiliary + subject + verb order." },
+            { num: 149, text: "The gerund form of 'run' is?", options: ["running", "ran", "runs", "runned"], correct: 0, subject: "English", explanation: "Gerund: verb + -ing = 'running'" },
+            { num: 150, text: "Complete: I wish I ____ a bird", options: ["am", "was", "were", "have been"], correct: 2, subject: "English", explanation: "'were' is used in wishes (subjunctive mood)." },
+        ];
+
+        let shuffledQuestions = [];
+        let currentQuestionIndex = 0;
+        let answers = {};
+        let correct = 0;
+        let subjectScores = { Chemistry: 0, Mathematics: 0, Physics: 0, Biology: 0, English: 0 };
+        let subjectCounts = { Chemistry: 0, Mathematics: 0, Physics: 0, Biology: 0, English: 0 };
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function initExam() {
+            shuffledQuestions = shuffleArray(allQuestions);
+            renderSubjectStats();
+            renderQuestion();
+        }
+
+        function renderSubjectStats() {
+            const statsHTML = `
+                <div class="subject-stat">
+                    <div class="subject-name">Chemistry</div>
+                    <div class="subject-score" id="chemScore">0/30</div>
+                </div>
+                <div class="subject-stat">
+                    <div class="subject-name">Math</div>
+                    <div class="subject-score" id="mathScore">0/30</div>
+                </div>
+                <div class="subject-stat">
+                    <div class="subject-name">Physics</div>
+                    <div class="subject-score" id="physScore">0/30</div>
+                </div>
+                <div class="subject-stat">
+                    <div class="subject-name">Biology</div>
+                    <div class="subject-score" id="bioScore">0/30</div>
+                </div>
+                <div class="subject-stat">
+                    <div class="subject-name">English</div>
+                    <div class="subject-score" id="engScore">0/30</div>
+                </div>
+            `;
+            document.getElementById('subjectStats').innerHTML = statsHTML;
+        }
+
+        function renderQuestion() {
+            const q = shuffledQuestions[currentQuestionIndex];
+            const isAnswered = answers[currentQuestionIndex] !== undefined;
+            
+            const html = `
+                <div class="question-container">
+                    <div class="question-header">
+                        <div class="question-number">Q${currentQuestionIndex + 1}/150</div>
+                        <div class="question-category">${q.subject}</div>
+                    </div>
+                    <div class="question-text">${q.text}</div>
+                    <div class="options">
+                        ${q.options.map((opt, idx) => {
+                            const letter = String.fromCharCode(65 + idx);
+                            const isCorrect = isAnswered && idx === q.correct;
+                            const isWrong = isAnswered && idx === answers[currentQuestionIndex] && idx !== q.correct;
+                            const classes = ['option'];
+                            if (isAnswered) classes.push('answered');
+                            if (isCorrect) classes.push('correct');
+                            if (isWrong) classes.push('wrong');
+                            
+                            return `
+                                <div class="${classes.join(' ')}" onclick="selectAnswer(${idx})" ${isAnswered ? 'style="pointer-events: none;"' : ''}>
+                                    <div class="option-letter">${letter}</div>
+                                    <div>${opt}</div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    ${isAnswered ? `
+                        <div class="feedback show ${answers[currentQuestionIndex] === q.correct ? 'correct' : 'wrong'}">
+                            <div class="feedback-title">${answers[currentQuestionIndex] === q.correct ? '✅ Correct!' : '❌ Incorrect'}</div>
+                            <div>${q.explanation}</div>
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="buttons">
+                    <button class="btn-secondary" onclick="previousQuestion()" ${currentQuestionIndex === 0 ? 'disabled' : ''}>← Previous</button>
+                    ${!isAnswered ? 
+                        `<button class="btn-secondary" disabled>Select an answer</button>` :
+                        `<button class="btn-primary" onclick="nextQuestion()" ${currentQuestionIndex === shuffledQuestions.length - 1 ? 'style="flex: 1;"' : ''}>
+                            ${currentQuestionIndex === shuffledQuestions.length - 1 ? 'Submit Exam ✓' : 'Next →'}
+                        </button>`
+                    }
+                </div>
+            `;
+            
+            document.getElementById('examContent').innerHTML = html;
+            updateProgress();
+        }
+
+        function selectAnswer(idx) {
+            const q = shuffledQuestions[currentQuestionIndex];
+            answers[currentQuestionIndex] = idx;
+            if (idx === q.correct) {
+                correct++;
+                subjectScores[q.subject]++;
+            }
+            subjectCounts[q.subject]++;
+            updateSubjectDisplay();
+            renderQuestion();
+        }
+
+        function updateSubjectDisplay() {
+            document.getElementById('chemScore').textContent = `${subjectScores['Chemistry']}/30`;
+            document.getElementById('mathScore').textContent = `${subjectScores['Mathematics']}/30`;
+            document.getElementById('physScore').textContent = `${subjectScores['Physics']}/30`;
+            document.getElementById('bioScore').textContent = `${subjectScores['Biology']}/30`;
+            document.getElementById('engScore').textContent = `${subjectScores['English']}/30`;
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex === shuffledQuestions.length - 1) {
+                showResults();
+            } else {
+                currentQuestionIndex++;
+                renderQuestion();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / shuffledQuestions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('correctCount').textContent = correct;
+            const percentage = Math.round((correct / (currentQuestionIndex + 1)) * 100);
+            document.getElementById('scorePercentage').textContent = percentage + '%';
+        }
+
+        function showResults() {
+            const percentage = Math.round((correct / shuffledQuestions.length) * 100);
+            let message = '';
+            if (percentage >= 80) message = '🎉 Excellent! Outstanding performance!';
+            else if (percentage >= 70) message = '👍 Great job! Very good understanding!';
+            else if (percentage >= 60) message = '📚 Good effort! Keep practicing!';
+            else if (percentage >= 50) message = '💪 Fair attempt! Review the material!';
+            else message = '⚠️ Needs improvement. Study more!';
+
+            document.getElementById('finalScore').textContent = `${correct}/150`;
+            document.getElementById('finalPercentage').textContent = `${percentage}%`;
+            document.getElementById('resultMessage').textContent = message;
+            document.getElementById('breakdownCorrect').textContent = correct;
+            document.getElementById('breakdownWrong').textContent = 150 - correct;
+
+            const subjectResultsHTML = `
+                <div class="subject-result-item">
+                    <div class="subject-name">Chemistry</div>
+                    <div class="score">${subjectScores['Chemistry']}/30</div>
+                </div>
+                <div class="subject-result-item">
+                    <div class="subject-name">Mathematics</div>
+                    <div class="score">${subjectScores['Mathematics']}/30</div>
+                </div>
+                <div class="subject-result-item">
+                    <div class="subject-name">Physics</div>
+                    <div class="score">${subjectScores['Physics']}/30</div>
+                </div>
+                <div class="subject-result-item">
+                    <div class="subject-name">Biology</div>
+                    <div class="score">${subjectScores['Biology']}/30</div>
+                </div>
+                <div class="subject-result-item">
+                    <div class="subject-name">English</div>
+                    <div class="score">${subjectScores['English']}/30</div>
+                </div>
+            `;
+            document.getElementById('subjectResultsList').innerHTML = subjectResultsHTML;
+            
+            document.getElementById('examContent').style.display = 'none';
+            document.getElementById('resultsScreen').classList.add('show');
+        }
+
+        function restartExam() {
+            currentQuestionIndex = 0;
+            answers = {};
+            correct = 0;
+            subjectScores = { Chemistry: 0, Mathematics: 0, Physics: 0, Biology: 0, English: 0 };
+            subjectCounts = { Chemistry: 0, Mathematics: 0, Physics: 0, Biology: 0, English: 0 };
+            document.getElementById('examContent').style.display = 'block';
+            document.getElementById('resultsScreen').classList.remove('show');
+            shuffledQuestions = shuffleArray(allQuestions);
+            renderSubjectStats();
+            renderQuestion();
+        }
+
+        function viewAnswerKey() {
+            let html = '';
+            allQuestions.forEach(q => {
+                const correctLetter = String.fromCharCode(65 + q.correct);
+                html += `
+                    <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #eee; font-size: 13px;">
+                        <strong>Q${q.num} (${q.subject}):</strong> ${q.text}<br>
+                        <span style="color: #4caf50; font-weight: 600;">✓ Answer: ${correctLetter}</span>
+                    </div>
+                `;
+            });
+            document.getElementById('answerKeyContent').innerHTML = html;
+            document.getElementById('answerKeyModal').classList.add('show');
+        }
+
+        function closeAnswerKey() {
+            document.getElementById('answerKeyModal').classList.remove('show');
+        }
+
+        window.onload = initExam;
+    </script>
+</body>
+</html>
